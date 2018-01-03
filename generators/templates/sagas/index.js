@@ -2,10 +2,10 @@ import { all } from 'redux-saga/effects';
 
 /* this is the saga index. */
 
-/* 💬 SAGA IMPORTS */
+/* 💬 IMPORTS */
 
 const allSagas = [
-  /* 💬 ALL SAGAS */
+  /* 💬 SYMBOLS */
 ];
 
 export default function*(...args) {

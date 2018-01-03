@@ -2,10 +2,11 @@ const { isEmpty } = require('lodash');
 
 module.exports = function(plop, config) {
   const {
-    relative,
     exists,
     insertIf,
-    makeModuleGenerator
+    makeModuleGenerator,
+    makeModifyImportsAction,
+    makeModifySymbolsAction
   } = require('./utils')(plop, config);
 
   const { modulePath, reduxRootPath } = config;
@@ -25,21 +26,15 @@ module.exports = function(plop, config) {
         templateFile: 'templates/sagas/index.js'
       }
     ),
-    {
-      type: 'modify',
+    makeModifyImportsAction({
+      nameKey,
       path: index,
-      pattern: /(\/\* 💬 SAGA IMPORTS \*\/)/gi,
-      template: `$1\nimport {{camelCase ${nameKey}}} from '${relative(
-        index,
-        file
-      )}'`
-    },
-    {
-      type: 'modify',
-      path: index,
-      pattern: /(\/\* 💬 ALL SAGAS \*\/)/g,
-      template: `$1\n  {{camelCase ${nameKey}}},`
-    }
+      fileToImport: file
+    }),
+    makeModifySymbolsAction({
+      nameKey,
+      path: index
+    })
   ];
 
   makeModuleGenerator('saga', {

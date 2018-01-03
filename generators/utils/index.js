@@ -1,23 +1,23 @@
 const fs = require('fs');
-const path = require('path');
+const nodePath = require('path');
 const { isEmpty, isFunction } = require('lodash');
 
 module.exports = (plop, config) => {
   const { modulePath } = config;
 
   const relative = (baseFile, file) => {
-    const baseDir = path.dirname(baseFile);
-    const fileDir = path.dirname(file);
-    // path.relative does not append "./" if its in same directory
+    const baseDir = nodePath.dirname(baseFile);
+    const fileDir = nodePath.dirname(file);
+    // nodePath.relative does not append "./" if its in same directory
     if (baseDir === fileDir) {
-      return `./${path.basename(file)}`;
+      return `./${nodePath.basename(file)}`;
     }
-    return path.relative(baseDir, file);
+    return nodePath.relative(baseDir, file);
   };
 
   const insertIf = (condition, ...elements) => (condition ? elements : []);
 
-  const makeDestPath = p => path.resolve(plop.getDestBasePath(), p);
+  const makeDestPath = p => nodePath.resolve(plop.getDestBasePath(), p);
   const exists = (data, pathTemlate) => {
     const fileDestPath = makeDestPath(
       plop.renderString(pathTemlate || '', data)
@@ -44,6 +44,23 @@ module.exports = (plop, config) => {
     message: 'This module does not exist. Should we create this module?'
   };
 
+  const makeModifyImportsAction = ({ nameKey, path, fileToImport }) => ({
+    type: 'modify',
+    path,
+    pattern: /(\/\* 💬 IMPORTS \*\/)/gi,
+    template: `$1\nimport {{camelCase ${nameKey}}} from '${relative(
+      path,
+      fileToImport
+    )}'`
+  });
+
+  const makeModifySymbolsAction = ({ nameKey, path }) => ({
+    type: 'modify',
+    path,
+    pattern: /(\/\* 💬 SYMBOLS \*\/)/g,
+    template: `$1\n  {{camelCase ${nameKey}}},`
+  });
+
   const makeModuleGenerator = (name, generatorConfig) =>
     plop.setGenerator(name, {
       ...generatorConfig,
@@ -64,6 +81,8 @@ module.exports = (plop, config) => {
     });
 
   return {
+    makeModifyImportsAction,
+    makeModifySymbolsAction,
     insertIf,
     exists,
     relative,
