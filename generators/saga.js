@@ -5,8 +5,8 @@ module.exports = function(plop, config) {
     exists,
     insertIf,
     makeModuleGenerator,
-    makeModifyImportsAction,
-    makeModifySymbolsAction
+    makeAppendImportsAction,
+    makeAppendSymbolsAction
   } = require('./utils')(plop, config);
 
   const { modulePath, reduxRootPath } = config;
@@ -17,21 +17,17 @@ module.exports = function(plop, config) {
   const rootSagaPath = `${reduxRootPath}/rootSaga.js`;
 
   const makeIndexSagaActions = (data, { nameKey, file, index }) => [
-    ...insertIf(
-      !exists(data, index),
-
-      {
-        type: 'add',
-        path: index,
-        templateFile: 'templates/sagas/index.js'
-      }
-    ),
-    makeModifyImportsAction({
+    ...insertIf(!exists(data, index), {
+      type: 'add',
+      path: index,
+      templateFile: 'templates/sagas/index.js'
+    }),
+    makeAppendImportsAction({
       nameKey,
       path: index,
       fileToImport: file
     }),
-    makeModifySymbolsAction({
+    makeAppendSymbolsAction({
       nameKey,
       path: index
     })

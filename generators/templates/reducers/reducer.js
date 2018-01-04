@@ -11,12 +11,6 @@ const createAction = moduleActions('{{moduleName}}/{{reducerName}}');
 export default handleActions(
   {
     /* 💬 ACTION-REDUCERS */
-    /*
-    [setPositionOffset.toString()]: (state: State, action) => ({
-      ...state,
-      positionOffset: action.payload
-    })
-    */
   },
   initialState
 );

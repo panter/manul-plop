@@ -1,3 +1,6 @@
 {
-  "name": "plop-example"
+  "name": "plop-example",
+  "devDependencies": {
+    "plop": "^1.9.1"
+  }
 }

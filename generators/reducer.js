@@ -5,8 +5,8 @@ module.exports = function(plop, config) {
     exists,
     insertIf,
     makeModuleGenerator,
-    makeModifyImportsAction,
-    makeModifySymbolsAction
+    makeAppendImportsAction,
+    makeAppendSymbolsAction
   } = require('./utils')(plop, config);
 
   const { modulePath, reduxRootPath } = config;
@@ -26,12 +26,12 @@ module.exports = function(plop, config) {
         templateFile: 'templates/reducers/index.js'
       }
     ),
-    makeModifyImportsAction({
+    makeAppendImportsAction({
       nameKey,
       path: index,
       fileToImport: file
     }),
-    makeModifySymbolsAction({
+    makeAppendSymbolsAction({
       nameKey,
       path: index
     })
@@ -48,17 +48,41 @@ module.exports = function(plop, config) {
           if (isEmpty(value)) return 'please provide a reducer name';
           return true;
         }
+      },
+      {
+        type: 'input',
+        name: 'actionName',
+        message: "What's the actions's name?",
+        validate(value) {
+          if (isEmpty(value)) return 'please provide a action name';
+          return true;
+        }
       }
     ],
 
     actions: data => [
       // reducer file
-      {
+      ...insertIf(!exists(data, reducerFilePath), {
         type: 'add',
         path: reducerFilePath,
         templateFile: 'templates/reducers/reducer.js',
-        abortOnFail: true
+        abortOnFail: false
+      }),
+      {
+        type: 'append',
+        path: reducerFilePath,
+        pattern: /\/\* 💬 ACTION-CREATORS \*\//gi,
+        templateFile: 'templates/reducers/actionCreator.js',
+        abortOnFail: false
       },
+      {
+        type: 'append',
+        path: reducerFilePath,
+        pattern: /\/\* 💬 ACTION-REDUCERS \*\//gi,
+        templateFile: 'templates/reducers/actionReducer.js',
+        abortOnFail: false
+      },
+
       // update module reducer index file,
       ...makeIndexReducerActions(data, {
         nameKey: 'reducerName',

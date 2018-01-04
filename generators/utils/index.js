@@ -41,24 +41,24 @@ module.exports = (plop, config) => {
     when(data) {
       return !exists(data, modulePath);
     },
-    message: 'This module does not exist. Should we create this module?'
+    message: 'This module does not exist. Should I create this module?'
   };
 
-  const makeModifyImportsAction = ({ nameKey, path, fileToImport }) => ({
-    type: 'modify',
+  const makeAppendImportsAction = ({ nameKey, path, fileToImport }) => ({
+    type: 'append',
     path,
-    pattern: /(\/\* 💬 IMPORTS \*\/)/gi,
-    template: `$1\nimport {{camelCase ${nameKey}}} from '${relative(
+    pattern: /\/\* 💬 IMPORTS \*\//gi,
+    template: `import {{camelCase ${nameKey}}} from '${relative(
       path,
       fileToImport
     )}'`
   });
 
-  const makeModifySymbolsAction = ({ nameKey, path }) => ({
-    type: 'modify',
+  const makeAppendSymbolsAction = ({ nameKey, path }) => ({
+    type: 'append',
     path,
-    pattern: /(\/\* 💬 SYMBOLS \*\/)/g,
-    template: `$1\n  {{camelCase ${nameKey}}},`
+    pattern: /\/\* 💬 SYMBOLS \*\//g,
+    template: `  {{camelCase ${nameKey}}},`
   });
 
   const makeModuleGenerator = (name, generatorConfig) =>
@@ -81,8 +81,8 @@ module.exports = (plop, config) => {
     });
 
   return {
-    makeModifyImportsAction,
-    makeModifySymbolsAction,
+    makeAppendImportsAction,
+    makeAppendSymbolsAction,
     insertIf,
     exists,
     relative,

@@ -1,3 +1,3 @@
 module.exports = function(plop) {
-  plop.load('../generators/saga.js');
+  plop.load('../generators/index.js');
 };
