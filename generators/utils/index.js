@@ -1,9 +1,8 @@
 const fs = require('fs');
 const nodePath = require('path');
-const { isEmpty, isFunction } = require('lodash');
 
-module.exports = (plop, config) => {
-  const { modulePath } = config;
+module.exports = (plop) => {
+
 
   const relative = (baseFile, file) => {
     const baseDir = nodePath.dirname(baseFile);
@@ -25,29 +24,11 @@ module.exports = (plop, config) => {
     return fs.existsSync(fileDestPath);
   };
 
-  const moduleNamePrompt = {
-    type: 'input',
-    name: 'moduleName',
-    message: "What's the module name?",
-    validate(value) {
-      if (isEmpty(value)) return 'please provide a module name';
-      return true;
-    }
-  };
-
-  const createModuleIfNotExistsPrompt = {
-    type: 'confirm',
-    name: 'createModule',
-    when(data) {
-      return !exists(data, modulePath);
-    },
-    message: 'This module does not exist. Should I create this module?'
-  };
 
   const makeAppendImportsAction = ({ nameKey, path, fileToImport }) => ({
     type: 'append',
     path,
-    pattern: /\/\* 💬 IMPORTS \*\//gi,
+    pattern: /\/\* 📌 IMPORTS \*\//gi,
     template: `import {{camelCase ${nameKey}}} from '${relative(
       path,
       fileToImport
@@ -57,35 +38,17 @@ module.exports = (plop, config) => {
   const makeAppendSymbolsAction = ({ nameKey, path }) => ({
     type: 'append',
     path,
-    pattern: /\/\* 💬 SYMBOLS \*\//g,
+    pattern: /\/\* 📌 SYMBOLS \*\//g,
     template: `  {{camelCase ${nameKey}}},`
   });
 
-  const makeModuleGenerator = (name, generatorConfig) =>
-    plop.setGenerator(name, {
-      ...generatorConfig,
-      prompts: [
-        moduleNamePrompt,
-        ...generatorConfig.prompts,
-        createModuleIfNotExistsPrompt
-      ],
-      actions: data => {
-        if (data.createModule === false) {
-          return []; // abort
-        }
-        if (isFunction(generatorConfig.actions)) {
-          return generatorConfig.actions(data);
-        }
-        return generatorConfig.actions;
-      }
-    });
+
 
   return {
     makeAppendImportsAction,
     makeAppendSymbolsAction,
     insertIf,
     exists,
-    relative,
-    makeModuleGenerator
+    relative
   };
 };

@@ -7,13 +7,23 @@ const initialState = {
 };
 
 // prefix all actions
-const createAction = moduleActions('{{moduleName}}/{{reducerName}}');
+const createAction = moduleActions('core/bla');
 
 /* 📌 ACTION-CREATORS */
+export const blubb = createAction(
+  `blubb`,
+  (f) => f
+);
+
 
 export default handleActions(
   {
     /* 📌 ACTION-REDUCERS */
+[blubb.toString()]: (state: State, action) => ({
+  ...state,
+  : action.payload
+}),
+
   },
   initialState
 );

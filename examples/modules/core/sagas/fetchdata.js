@@ -12,15 +12,15 @@ import {
 import { delay, eventChannel, takeLatest, takeEvery } from 'redux-saga';
 
 // prefix all actions
-const createAction = moduleActions('{{moduleName}}/{{sagaName}}');
+const createAction = moduleActions('core/fetchdata');
 
-export const start{{pascalCase sagaName}} = createAction("start{{pascalCase sagaName}}")
-export const stop{{pascalCase sagaName}} = createAction("stop{{pascalCase sagaName}}")
+export const startFetchdata = createAction("startFetchdata")
+export const stopFetchdata = createAction("stopFetchdata")
 
 export default function*() {
   
 
-  takeEvery(start{{pascalCase sagaName}}, function*(){
+  takeEvery(startFetchdata, function*(){
 
     // Fill me!
 

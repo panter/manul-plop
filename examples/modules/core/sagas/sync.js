@@ -12,15 +12,15 @@ import {
 import { delay, eventChannel, takeLatest, takeEvery } from 'redux-saga';
 
 // prefix all actions
-const createAction = moduleActions('{{moduleName}}/{{sagaName}}');
+const createAction = moduleActions('core/sync');
 
-export const start{{pascalCase sagaName}} = createAction("start{{pascalCase sagaName}}")
-export const stop{{pascalCase sagaName}} = createAction("stop{{pascalCase sagaName}}")
+export const startSync = createAction("startSync")
+export const stopSync = createAction("stopSync")
 
 export default function*() {
   
 
-  takeEvery(start{{pascalCase sagaName}}, function*(){
+  takeEvery(startSync, function*(){
 
     // Fill me!
 
