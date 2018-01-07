@@ -1,8 +1,16 @@
 # manul-plop
-Mantra-style generators for "plop", replacing mantra-cli
+Mantra-style plop-pack for [plop](https://github.com/amwmedia/plop/), replacing mantra-cli.
 
-*Work in progress*, uses currently a forked version of plop-node (https://github.com/panter/node-plop.git#9985bae2e8e87d16f2891eb076f63732990aae73), 
+*Work in progress*, uses currently a forked version o()https://github.com/amwmedia/plop/f plop-node (https://github.com/panter/node-plop.git#9985bae2e8e87d16f2891eb076f63732990aae73), 
 upstream PRS are pending
+
+
+`plop` is a micro-framework to create code-generators like yeoman, but much simpler. This is a plop-pack 
+to create mantra-like react-redux-apps (where everything is organized in modules). 
+
+It can generate components, containers (todo), reducers and actions, as well as sagas and wires everything up. It's little opinionated and can be highly customized later, but gives good defaults to work with.
+
+
 
 
 ## generators
