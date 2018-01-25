@@ -1,6 +1,6 @@
 {
-  "name": "manul-plop",
-  "version": "1.0.0",
+  "name": "@panter/plop-pack-manul",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "directories": {

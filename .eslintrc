@@ -1,6 +1,7 @@
 {
   "extends": ["airbnb", "prettier"],
   "rules": {
-    "func-names": 0
+    "func-names": 0,
+    "global-require": 0
   }
 }
