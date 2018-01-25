@@ -1,3 +1,3 @@
-module.exports = function(plop, config) {
+module.exports = function(plop) {
   plop.load('../index.js');
 };
