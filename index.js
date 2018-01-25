@@ -8,6 +8,9 @@ module.exports = function(plop, customConfig = {}) {
     ...defaultConfig,
     ...customConfig
   };
+  if (config.destBasePath) {
+    plop.setPlopfilePath(config.destBasePath);
+  }
 
   require('./generators')(plop, config);
 

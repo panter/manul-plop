@@ -1,5 +1,3 @@
-module.exports = function(plop) {
-  const bla = plop.load('../generators/index.js');
-
-  console.log(bla)
+module.exports = function(plop, config) {
+  plop.load('../index.js');
 };
