@@ -1,6 +1,7 @@
 const defaultConfig = {
   modulePath: './modules/{{camelCase moduleName}}',
-  reduxRootPath: './redux'
+  reduxRootPath: './redux',
+  templatePath: 'plopTemplates'
 };
 
 module.exports = function(plop, customConfig = {}) {

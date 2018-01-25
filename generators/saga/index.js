@@ -19,7 +19,7 @@ module.exports = function(plop, config) {
     ...insertIf(!exists(data, index), {
       type: 'add',
       path: index,
-      templateFile: 'templates/sagas/index.js'
+      templateFile: `${config.templatePath}/sagas/index.js`
     }),
     makeAppendImportsAction({
       nameKey,
@@ -52,7 +52,7 @@ module.exports = function(plop, config) {
       {
         type: 'add',
         path: sagaFilePath,
-        templateFile: 'templates/sagas/saga.js',
+        templateFile: `${config.templatePath}/sagas/saga.js`,
         abortOnFail: true
       },
       // update module saga index file,
@@ -62,14 +62,12 @@ module.exports = function(plop, config) {
         file: sagaFilePath
       }),
 
-
-        // upsert rootSaga
-        ...makeIndexSagaActions(data, {
-          nameKey: 'moduleName',
-          index: rootSagaPath,
-          file: sagaIndexPath
-        })
-      
+      // upsert rootSaga
+      ...makeIndexSagaActions(data, {
+        nameKey: 'moduleName',
+        index: rootSagaPath,
+        file: sagaIndexPath
+      })
     ]
   });
 };

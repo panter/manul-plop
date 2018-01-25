@@ -5,9 +5,11 @@ import core from '../modules/core/reducers/index.js'
 
 
 
+
 export default combineReducers({
   /* 📌 SYMBOLS */
   core,
+
 
 
 });

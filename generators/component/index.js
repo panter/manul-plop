@@ -1,14 +1,11 @@
-
-module.exports = function(plop) {
-  const {
-    insertIf,
-  } = require('../utils')(plop);
+module.exports = function(plop, config) {
+  const { insertIf } = require('../utils')(plop);
 
   plop.setActionType('component', (answers, _actionConfig, { runActions }) => {
     const actionConfig = {
-      path: "src/components",
+      path: 'src/components',
       ..._actionConfig
-    }
+    };
     return runActions(
       [
         {
@@ -31,7 +28,6 @@ module.exports = function(plop) {
     );
   });
 
-
   plop.setGenerator('component', {
     mixins: ['with-module'],
     prompts: [
@@ -44,10 +40,10 @@ module.exports = function(plop) {
     actions: [
       {
         type: 'component',
-        pathInModule: "components",
-        componentTemplate: 'templates/components/component.js',
-        testTemplate: 'templates/components/component.test.js',
-        storyTemplate: 'templates/components/component.story.js'
+        pathInModule: 'components',
+        componentTemplate: `${config.templatePath}/components/component.js`,
+        testTemplate: `${config.templatePath}/components/component.test.js`,
+        storyTemplate: `${config.templatePath}/components/component.story.js`
       }
     ]
   });
@@ -64,10 +60,10 @@ module.exports = function(plop) {
     actions: [
       {
         type: 'component',
-        pathInModule: "components",
-        componentTemplate: 'templates/components/component.js',
-        testTemplate: 'templates/components/component.test.js',
-        storyTemplate: 'templates/components/component.story.js'
+        pathInModule: 'components',
+        componentTemplate: `${config.templatePath}/components/component.js`,
+        testTemplate: `${config.templatePath}/components/component.test.js`,
+        storyTemplate: `${config.templatePath}/components/component.story.js`
       }
     ]
   });

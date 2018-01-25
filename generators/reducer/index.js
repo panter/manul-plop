@@ -19,7 +19,7 @@ module.exports = function(plop, config) {
     ...insertIf(!exists(data, index), {
       type: 'add',
       path: index,
-      templateFile: 'templates/reducers/index.js'
+      templateFile: `${config.templatePath}/reducers/index.js`
     }),
     makeAppendImportsAction({
       nameKey,
@@ -35,25 +35,25 @@ module.exports = function(plop, config) {
   const makeReducerActions = (data, overwriteData = {}) => {
     // we have to mutate data :-/
     Object.assign(data, overwriteData);
-    console.log(data)
+    console.log(data);
     return [
       // reducer file
       ...insertIf(!exists(data, reducerFilePath), {
         type: 'add',
         path: reducerFilePath,
-        templateFile: 'templates/reducers/reducer.js'
+        templateFile: `${config.templatePath}/reducers/reducer.js`
       }),
       {
         type: 'append',
         path: reducerFilePath,
         pattern: /\/\* 📌 ACTION-CREATORS \*\//gi,
-        templateFile: 'templates/reducers/actionCreator.js'
+        templateFile: `${config.templatePath}/reducers/actionCreator.js`
       },
       {
         type: 'append',
         path: reducerFilePath,
         pattern: /\/\* 📌 ACTION-REDUCERS \*\//gi,
-        templateFile: 'templates/reducers/actionReducer.js'
+        templateFile: `${config.templatePath}/reducers/actionReducer.js`
       },
 
       // update module reducer index file,
@@ -63,14 +63,12 @@ module.exports = function(plop, config) {
         file: reducerFilePath
       }),
 
-
-        // upsert rootReducer
-        ...makeIndexReducerActions(data, {
-          nameKey: 'moduleName',
-          index: rootReducerPath,
-          file: reducerIndexPath
-        })
-      
+      // upsert rootReducer
+      ...makeIndexReducerActions(data, {
+        nameKey: 'moduleName',
+        index: rootReducerPath,
+        file: reducerIndexPath
+      })
     ];
   };
 
@@ -133,7 +131,7 @@ module.exports = function(plop, config) {
         type: 'append',
         path: reducerFilePath,
         pattern: /\/\* 📌 INITIAL-STATE \*\//gi,
-        templateFile: 'templates/reducers/initialState.js'
+        templateFile: `${config.templatePath}/reducers/initialState.js`
       }
     ]
   });
