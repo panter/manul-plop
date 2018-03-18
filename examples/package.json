@@ -1,6 +1,6 @@
 {
   "name": "plop-example",
   "devDependencies": {
-    "plop": "^1.9.1"
+    "@panter/plop": "^1.9.1"
   }
 }

@@ -1,9 +1,7 @@
 const fs = require('fs');
 const nodePath = require('path');
 
-module.exports = (plop) => {
-
-
+module.exports = plop => {
   const relative = (baseFile, file) => {
     const baseDir = nodePath.dirname(baseFile);
     const fileDir = nodePath.dirname(file);
@@ -24,7 +22,6 @@ module.exports = (plop) => {
     return fs.existsSync(fileDestPath);
   };
 
-
   const makeAppendImportsAction = ({ nameKey, path, fileToImport }) => ({
     type: 'append',
     path,
@@ -41,8 +38,6 @@ module.exports = (plop) => {
     pattern: /\/\* 📌 SYMBOLS \*\//g,
     template: `  {{camelCase ${nameKey}}},`
   });
-
-
 
   return {
     makeAppendImportsAction,

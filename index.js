@@ -1,6 +1,7 @@
 const defaultConfig = {
-  modulePath: './modules/{{camelCase moduleName}}',
-  reduxRootPath: './redux',
+  basePath: './src',
+  modulesPath: 'ui',
+  reduxRootPath: 'redux',
   templatePath: 'plopTemplates'
 };
 
@@ -9,9 +10,6 @@ module.exports = function(plop, customConfig = {}) {
     ...defaultConfig,
     ...customConfig
   };
-  if (config.destBasePath) {
-    plop.setPlopfilePath(config.destBasePath);
-  }
 
   require('./generators')(plop, config);
 

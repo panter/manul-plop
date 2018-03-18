@@ -8,7 +8,9 @@ module.exports = function(plop, config) {
     makeAppendSymbolsAction
   } = require('../utils')(plop, config);
 
-  const { modulePath, reduxRootPath } = config;
+  const { templatePath, modulePath, reduxRootPath } = require('../paths')(
+    config
+  );
 
   const moduleSagaPath = `${modulePath}/sagas`;
   const sagaIndexPath = `${moduleSagaPath}/index.js`;
@@ -19,7 +21,7 @@ module.exports = function(plop, config) {
     ...insertIf(!exists(data, index), {
       type: 'add',
       path: index,
-      templateFile: `${config.templatePath}/sagas/index.js`
+      templateFile: `${templatePath}/sagas/index.js`
     }),
     makeAppendImportsAction({
       nameKey,
@@ -52,7 +54,7 @@ module.exports = function(plop, config) {
       {
         type: 'add',
         path: sagaFilePath,
-        templateFile: `${config.templatePath}/sagas/saga.js`,
+        templateFile: `${templatePath}/sagas/saga.js`,
         abortOnFail: true
       },
       // update module saga index file,

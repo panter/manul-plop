@@ -1,9 +1,8 @@
-
 const { isEmpty } = require('lodash');
 
 module.exports = (plop, config) => {
-  const { modulePath } = config;
-  const {exists} = require('../utils')(plop, config)
+  const { modulePath } = require('../paths')(config);
+  const { exists } = require('../utils')(plop);
 
   const moduleNamePrompt = {
     type: 'input',
@@ -31,17 +30,15 @@ module.exports = (plop, config) => {
       createModuleIfNotExistsPrompt
     ],
     actions: (actions = [], data) => {
-
-
       if (data.createModule === false) {
         return []; // abort
       }
-      const __result = actions.map(actionConfig => ({
+      const result = actions.map(actionConfig => ({
         ...actionConfig,
         path: actionConfig.path || `${modulePath}/${actionConfig.pathInModule}`
       }));
 
-      return __result
+      return result;
     }
   });
 };

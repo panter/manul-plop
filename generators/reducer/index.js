@@ -8,8 +8,9 @@ module.exports = function(plop, config) {
     makeAppendSymbolsAction
   } = require('../utils')(plop, config);
 
-  const { modulePath, reduxRootPath } = config;
-
+  const { templatePath, modulePath, reduxRootPath } = require('../paths')(
+    config
+  );
   const moduleReducerPath = `${modulePath}/reducers`;
   const reducerIndexPath = `${moduleReducerPath}/index.js`;
   const reducerFilePath = `${moduleReducerPath}/{{camelCase reducerName}}.js`;
@@ -19,7 +20,7 @@ module.exports = function(plop, config) {
     ...insertIf(!exists(data, index), {
       type: 'add',
       path: index,
-      templateFile: `${config.templatePath}/reducers/index.js`
+      templateFile: `${templatePath}/reducers/index.js`
     }),
     makeAppendImportsAction({
       nameKey,
@@ -35,25 +36,25 @@ module.exports = function(plop, config) {
   const makeReducerActions = (data, overwriteData = {}) => {
     // we have to mutate data :-/
     Object.assign(data, overwriteData);
-    console.log(data);
+
     return [
       // reducer file
       ...insertIf(!exists(data, reducerFilePath), {
         type: 'add',
         path: reducerFilePath,
-        templateFile: `${config.templatePath}/reducers/reducer.js`
+        templateFile: `${templatePath}/reducers/reducer.js`
       }),
       {
         type: 'append',
         path: reducerFilePath,
         pattern: /\/\* 📌 ACTION-CREATORS \*\//gi,
-        templateFile: `${config.templatePath}/reducers/actionCreator.js`
+        templateFile: `${templatePath}/reducers/actionCreator.js`
       },
       {
         type: 'append',
         path: reducerFilePath,
         pattern: /\/\* 📌 ACTION-REDUCERS \*\//gi,
-        templateFile: `${config.templatePath}/reducers/actionReducer.js`
+        templateFile: `${templatePath}/reducers/actionReducer.js`
       },
 
       // update module reducer index file,
@@ -83,8 +84,8 @@ module.exports = function(plop, config) {
   };
 
   plop.setGenerator('reducer', {
-    description: 'create a reducer',
     mixins: ['with-module'],
+    description: 'create a reducer',
     prompts: [
       reducerNamePrompt,
       {
@@ -100,8 +101,8 @@ module.exports = function(plop, config) {
     actions: makeReducerActions
   });
   plop.setGenerator('reducer-setter', {
-    description: 'create a setter reducer',
     mixins: ['with-module'],
+    description: 'create a setter reducer',
     prompts: [
       reducerNamePrompt,
       {
@@ -131,7 +132,7 @@ module.exports = function(plop, config) {
         type: 'append',
         path: reducerFilePath,
         pattern: /\/\* 📌 INITIAL-STATE \*\//gi,
-        templateFile: `${config.templatePath}/reducers/initialState.js`
+        templateFile: `${templatePath}/reducers/initialState.js`
       }
     ]
   });
