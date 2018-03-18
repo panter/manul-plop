@@ -1,4 +1,4 @@
-[{{actionName}}.toString()]: (state, action) => ({
+{{actionName}}: (state, action) => ({
   ...state,
-  {{{propertyName}}}: {{propertyValue}}
+  {{{propertyName}}}: {{{propertyValue}}}
 }),

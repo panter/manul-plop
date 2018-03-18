@@ -4,5 +4,7 @@ module.exports = function(plop, config) {
   require('./reducer')(plop, config);
   require('./saga')(plop, config);
 
+  plop.setHelper('toString', v => `${v}`);
+
   return plop;
 };

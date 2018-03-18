@@ -14,42 +14,47 @@ module.exports = function(plop, config) {
   const reducerFilePath = `${moduleReducerPath}/{{camelCase reducerName}}.js`;
   const rootReducerPath = `${reduxRootPath}/rootReducer.js`;
 
-  const makeIndexReducerActions = (data, { nameKey, file, index }) => [
+  const makeIndexReducerActions = ({ data, nameKey, file, index }) => [
     {
+      data,
       skipIfExists: true,
       type: 'add',
       path: index,
       templateFile: `${templatePath}/reducers/index.js`
     },
     makeAppendImportsAction({
+      data,
       nameKey,
       path: index,
       fileToImport: file
     }),
     makeAppendSymbolsAction({
+      data,
       nameKey,
       path: index
     })
   ];
 
-  const makeReducerActions = (data, additionalData = {}) => {
-    // extend data
-    Object.assign(data, additionalData);
+  const makeReducerActions = (baseData, additionalData) => {
+    const data = { ...baseData, ...additionalData };
     return [
       // reducer file
       {
+        data,
         skipIfExists: true,
         type: 'add',
         path: reducerFilePath,
         templateFile: `${templatePath}/reducers/reducer.js`
       },
       {
+        data,
         type: 'append',
         path: reducerFilePath,
         pattern: /\/\* 📌 ACTION-CREATORS \*\//gi,
         templateFile: `${templatePath}/reducers/actionCreator.js`
       },
       {
+        data,
         type: 'append',
         path: reducerFilePath,
         pattern: /\/\* 📌 ACTION-REDUCERS \*\//gi,
@@ -57,14 +62,16 @@ module.exports = function(plop, config) {
       },
 
       // update module reducer index file,
-      ...makeIndexReducerActions(data, {
+      ...makeIndexReducerActions({
+        data,
         nameKey: 'reducerName',
         index: reducerIndexPath,
         file: reducerFilePath
       }),
 
       // upsert rootReducer
-      ...makeIndexReducerActions(data, {
+      ...makeIndexReducerActions({
+        data,
         nameKey: 'moduleName',
         index: rootReducerPath,
         file: reducerIndexPath
@@ -117,20 +124,24 @@ module.exports = function(plop, config) {
     actions: data => [
       ...makeReducerActions(data, {
         reducerName: 'ui',
-        actionName: `show${upperFirst(data.uiElementName)}`,
         propertyName: `${data.uiElementName}Visible`,
-        propertyValue: true,
+        actionName: `hide${upperFirst(data.uiElementName)}`,
+        propertyValue: 'Boolean(false)', // false is buggy (!) see https://github.com/amwmedia/plop/issues/112
         payloadCreator: null
       }),
       ...makeReducerActions(data, {
         reducerName: 'ui',
+        actionName: `show${upperFirst(data.uiElementName)}`,
         propertyName: `${data.uiElementName}Visible`,
-        actionName: `hide${upperFirst(data.uiElementName)}`,
-        propertyValue: false,
+        propertyValue: 'true',
         payloadCreator: null
       }),
+
       {
         type: 'append',
+        data: {
+          reducerName: 'ui'
+        },
         path: reducerFilePath,
         pattern: /\/\* 📌 INITIAL-STATE \*\//gi,
         template: `${data.uiElementName}Visible: false`

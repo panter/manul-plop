@@ -22,8 +22,9 @@ module.exports = plop => {
     return fs.existsSync(fileDestPath);
   };
 
-  const makeAppendImportsAction = ({ nameKey, path, fileToImport }) => ({
+  const makeAppendImportsAction = ({ nameKey, path, fileToImport, data }) => ({
     type: 'append',
+    data,
     path,
     pattern: /\/\* 📌 IMPORTS \*\//gi,
     template: `import {{camelCase ${nameKey}}} from '${relative(
@@ -32,8 +33,9 @@ module.exports = plop => {
     )}'`
   });
 
-  const makeAppendSymbolsAction = ({ nameKey, path }) => ({
+  const makeAppendSymbolsAction = ({ nameKey, path, data }) => ({
     type: 'append',
+    data,
     path,
     pattern: /\/\* 📌 SYMBOLS \*\//g,
     template: `  {{camelCase ${nameKey}}},`
