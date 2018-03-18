@@ -16,36 +16,51 @@ module.exports = function(plop, config) {
   const reducerFilePath = `${moduleReducerPath}/{{camelCase reducerName}}.js`;
   const rootReducerPath = `${reduxRootPath}/rootReducer.js`;
 
-  const makeIndexReducerActions = ({ data, nameKey, file, index }) => [
-    {
-      data,
-      skipIfExists: true,
-      type: 'add',
-      path: index,
-      templateFile: `${templatePath}/reducers/index.js`
-    },
-    makeAppendImportsAction({
-      data,
-      defaultImport: `{{camelCase ${nameKey}}}`,
-      typeImports: [`{{pascalCase ${nameKey}}}State`],
-      path: index,
-      fileToImport: file
-    }),
-    makeAppendKeyValueAction({
-      data,
-      key: `{{camelCase ${nameKey}}}`,
-      value: `{{camelCase ${nameKey}}}`,
-      marker: 'SYMBOLS',
-      path: index
-    }),
-    makeAppendKeyValueAction({
-      data,
-      key: `{{camelCase ${nameKey}}}`,
-      value: `{{pascalCase ${nameKey}}}State`,
-      marker: 'SYMBOLS_TYPES',
-      path: index
-    })
-  ];
+  const makeIndexReducerActions = ({
+    data: dataRaw,
+    nameKey,
+    exportNameKey,
+    file,
+    index
+  }) => {
+    const data = {
+      ...dataRaw,
+      exportReducerStateType: getReducerStateType(dataRaw[exportNameKey])
+    };
+
+    const reducerNameTemplate = `{{camelCase ${nameKey}}}`;
+    const stateTypeTemplateName = `{{pascalCase ${nameKey}}}State`;
+    return [
+      {
+        data,
+        skipIfExists: true,
+        type: 'add',
+        path: index,
+        templateFile: `${templatePath}/reducers/index.js`
+      },
+      makeAppendImportsAction({
+        data,
+        defaultImport: reducerNameTemplate,
+        typeImports: [stateTypeTemplateName],
+        path: index,
+        fileToImport: file
+      }),
+      makeAppendKeyValueAction({
+        data,
+        key: reducerNameTemplate,
+        value: reducerNameTemplate,
+        marker: 'SYMBOLS',
+        path: index
+      }),
+      makeAppendKeyValueAction({
+        data,
+        key: reducerNameTemplate,
+        value: stateTypeTemplateName,
+        marker: 'SYMBOLS_TYPES',
+        path: index
+      })
+    ];
+  };
 
   const makeReducerActions = (baseData, additionalData) => {
     const combinedData = { ...baseData, ...additionalData };
@@ -81,6 +96,7 @@ module.exports = function(plop, config) {
       ...makeIndexReducerActions({
         data,
         nameKey: 'reducerName',
+        exportNameKey: 'moduleName',
         index: reducerIndexPath,
         file: reducerFilePath
       }),
@@ -89,6 +105,7 @@ module.exports = function(plop, config) {
       ...makeIndexReducerActions({
         data,
         nameKey: 'moduleName',
+        exportNameKey: null,
         index: rootReducerPath,
         file: reducerIndexPath
       })
@@ -152,8 +169,16 @@ module.exports = function(plop, config) {
         propertyValue: 'true',
         payloadCreator: null
       }),
-
-      {
+      makeAppendKeyValueAction({
+        data: {
+          reducerName: 'ui'
+        },
+        key: `${data.uiElementName}Visible`,
+        value: 'false',
+        marker: 'INITIAL-STATE',
+        path: reducerFilePath
+      })
+      /* {
         type: 'append',
         data: {
           reducerName: 'ui'
@@ -161,7 +186,7 @@ module.exports = function(plop, config) {
         path: reducerFilePath,
         pattern: /\/\* 📌 INITIAL-STATE \*\//gi,
         template: `${data.uiElementName}Visible: false`
-      }
+      } */
     ]
   });
   plop.setGenerator('reducer-setter', {
@@ -174,12 +199,19 @@ module.exports = function(plop, config) {
         propertyValue: 'action.payload',
         payloadCreator: `(f) => f`
       }),
-      {
+      makeAppendKeyValueAction({
+        data,
+        key: '{{propertyName}}',
+        value: '{{{initialValue}}}',
+        marker: 'INITIAL-STATE',
+        path: reducerFilePath
+      })
+      /* {
         type: 'append',
         path: reducerFilePath,
         pattern: /\/\* 📌 INITIAL-STATE \*\//gi,
-        template: '{{propertyName}}: {{{initialValue}}}'
-      }
+        template: '{{propertyName}}: {{{initialValue}}}, '
+      } */
     ]
   });
 

@@ -1,7 +1,50 @@
 {
-  "extends": ["airbnb", "prettier"],
+  "parserOptions": {
+    "ecmaVersion": 7,
+    "sourceType": "module",
+    "allowImportExportEverywhere": true,
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "globalReturn": true,
+      "jsx": true
+    }
+  },
+  "parser": "babel-eslint",
+  "plugins": [
+    "flowtype"
+  ],
+  "extends": [
+    "airbnb",
+    "prettier",
+    "plugin:flowtype/recommended"
+  ],
   "rules": {
     "func-names": 0,
-    "global-require": 0
+    "semi": [
+      "error",
+      "never"
+    ],
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
+      }
+    ],
+    "react/sort-comp": 0,
+    "no-underscore-dangle": 0,
+    "no-nested-ternary": 0,
+    "react/require-default-props": 0,
+    "react/no-unused-prop-types": 0,
+    "react/prop-types": 0,
+    "global-require": 0,
+    "max-len": [0, 80],
+    "jsx-a11y/accessible-emoji": 0,
+    "jsx-a11y/href-no-hash": 0,
+    "no-confusing-arrow": 0,
+    "import/no-extraneous-dependencies": 0,
+    "import/prefer-default-export": 0
   }
 }

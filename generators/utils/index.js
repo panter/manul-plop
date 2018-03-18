@@ -1,7 +1,8 @@
 const fs = require('fs');
 const nodePath = require('path');
 
-const makeMarkerPattern = marker => new RegExp(`/* 📌 ${marker} */`, 'gi');
+const makeMarkerPattern = marker =>
+  new RegExp(`\\/\\* 📌 ${marker} \\*\\/`, 'gi');
 
 module.exports = plop => {
   const relative = (baseFile, file) => {

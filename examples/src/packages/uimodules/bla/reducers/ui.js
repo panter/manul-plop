@@ -4,31 +4,38 @@ import { moduleActions } from '@panter/manul-redux-utils';
 
 const initialState = {
   /* 📌 INITIAL-STATE */
-  barVisible: false
+  fudiVisible: false, 
 };
 
 export type UiState = typeof initialState;
-
 // prefix all actions
-const createAction = moduleActions('foo/ui');
+const createAction = moduleActions('bla/ui');
 
 /* 📌 ACTION-CREATORS */
-export const showBar = createAction(`showBar`);
+export const showFudi = createAction(
+  `showFudi`,
+  
+);
 
-export const hideBar = createAction(`hideBar`);
+export const hideFudi = createAction(
+  `hideFudi`,
+  
+);
+
 
 export default handleActions(
   {
     /* 📌 ACTION-REDUCERS */
-    showBar: (state, action) => ({
-      ...state,
-      barVisible: true
-    }),
+showFudi: (state: UiState, action) => ({
+  ...state,
+  fudiVisible: true
+}),
 
-    hideBar: (state, action) => ({
-      ...state,
-      barVisible: Boolean(false)
-    })
+hideFudi: (state: UiState, action) => ({
+  ...state,
+  fudiVisible: Boolean(false)
+}),
+
   },
   initialState
 );
