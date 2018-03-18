@@ -2,8 +2,6 @@ const { isEmpty, upperFirst } = require('lodash');
 
 module.exports = function(plop, config) {
   const {
-    exists,
-    insertIf,
     makeAppendImportsAction,
     makeAppendSymbolsAction
   } = require('../utils')(plop, config);
@@ -17,11 +15,12 @@ module.exports = function(plop, config) {
   const rootReducerPath = `${reduxRootPath}/rootReducer.js`;
 
   const makeIndexReducerActions = (data, { nameKey, file, index }) => [
-    ...insertIf(!exists(data, index), {
+    {
+      skipIfExists: true,
       type: 'add',
       path: index,
       templateFile: `${templatePath}/reducers/index.js`
-    }),
+    },
     makeAppendImportsAction({
       nameKey,
       path: index,
@@ -33,17 +32,17 @@ module.exports = function(plop, config) {
     })
   ];
 
-  const makeReducerActions = (data, overwriteData = {}) => {
-    // we have to mutate data :-/
-    Object.assign(data, overwriteData);
-
+  const makeReducerActions = (data, additionalData = {}) => {
+    // extend data
+    Object.assign(data, additionalData);
     return [
       // reducer file
-      ...insertIf(!exists(data, reducerFilePath), {
+      {
+        skipIfExists: true,
         type: 'add',
         path: reducerFilePath,
         templateFile: `${templatePath}/reducers/reducer.js`
-      }),
+      },
       {
         type: 'append',
         path: reducerFilePath,
@@ -82,10 +81,84 @@ module.exports = function(plop, config) {
       return true;
     }
   };
+  const uiElementNamePrompt = {
+    type: 'input',
+    name: 'uiElementName',
+    message: "What's the ui-element's name?",
+    validate(value) {
+      if (isEmpty(value)) return 'please provide an ui-element name';
+      return true;
+    }
+  };
 
-  plop.setGenerator('reducer', {
+  const propertyNamePrompt = {
+    type: 'input',
+    name: 'propertyName',
+    message: "What's the property's name?",
+    validate(value) {
+      if (isEmpty(value)) return 'please provide a property name';
+      return true;
+    }
+  };
+  const initialValuePrompt = {
+    type: 'input',
+    name: 'initialValue',
+    message: "What's the property's initial value?",
+    validate(value) {
+      if (isEmpty(value)) return 'please provide a property value';
+      return true;
+    }
+  };
+
+  plop.setGenerator('reducer-ui', {
     mixins: ['with-module'],
-    description: 'create a reducer',
+    description: 'create a ui reducer-action',
+    prompts: [uiElementNamePrompt],
+    actions: data => [
+      ...makeReducerActions(data, {
+        reducerName: 'ui',
+        actionName: `show${upperFirst(data.uiElementName)}`,
+        propertyName: `${data.uiElementName}Visible`,
+        propertyValue: true,
+        payloadCreator: null
+      }),
+      ...makeReducerActions(data, {
+        reducerName: 'ui',
+        propertyName: `${data.uiElementName}Visible`,
+        actionName: `hide${upperFirst(data.uiElementName)}`,
+        propertyValue: false,
+        payloadCreator: null
+      }),
+      {
+        type: 'append',
+        path: reducerFilePath,
+        pattern: /\/\* 📌 INITIAL-STATE \*\//gi,
+        template: `${data.uiElementName}Visible: false`
+      }
+    ]
+  });
+  plop.setGenerator('reducer-setter', {
+    mixins: ['with-module'],
+    description: 'create a setter reducer-action',
+    prompts: [reducerNamePrompt, propertyNamePrompt, initialValuePrompt],
+    actions: data => [
+      ...makeReducerActions(data, {
+        actionName: `set${upperFirst(data.propertyName)}`,
+        propertyValue: 'action.payload',
+        payloadCreator: `(f) => f`
+      }),
+      {
+        type: 'append',
+        path: reducerFilePath,
+        pattern: /\/\* 📌 INITIAL-STATE \*\//gi,
+        template: '{{propertyName}}: {{{initialValue}}}'
+      }
+    ]
+  });
+
+  plop.setGenerator('reducer-custom', {
+    mixins: ['with-module'],
+    description: 'create a custom reducer',
     prompts: [
       reducerNamePrompt,
       {
@@ -99,41 +172,5 @@ module.exports = function(plop, config) {
       }
     ],
     actions: makeReducerActions
-  });
-  plop.setGenerator('reducer-setter', {
-    mixins: ['with-module'],
-    description: 'create a setter reducer',
-    prompts: [
-      reducerNamePrompt,
-      {
-        type: 'input',
-        name: 'propertyName',
-        message: "What's the property's name?",
-        validate(value) {
-          if (isEmpty(value)) return 'please provide a property name';
-          return true;
-        }
-      },
-      {
-        type: 'input',
-        name: 'initialValue',
-        message: "What's the property's initial value?",
-        validate(value) {
-          if (isEmpty(value)) return 'please provide a property value';
-          return true;
-        }
-      }
-    ],
-    actions: data => [
-      ...makeReducerActions(data, {
-        actionName: `set${upperFirst(data.propertyName)}`
-      }),
-      {
-        type: 'append',
-        path: reducerFilePath,
-        pattern: /\/\* 📌 INITIAL-STATE \*\//gi,
-        templateFile: `${templatePath}/reducers/initialState.js`
-      }
-    ]
   });
 };
