@@ -1,9 +1,11 @@
-const { isEmpty, upperFirst } = require('lodash');
+const { isEmpty, upperFirst, camelCase } = require('lodash');
 
+const pascalCase = s => upperFirst(camelCase(s));
+const getReducerStateType = reducerName => `${pascalCase(reducerName)}State`;
 module.exports = function(plop, config) {
   const {
     makeAppendImportsAction,
-    makeAppendSymbolsAction
+    makeAppendKeyValueAction
   } = require('../utils')(plop, config);
 
   const { templatePath, modulePath, reduxRootPath } = require('../paths')(
@@ -24,19 +26,33 @@ module.exports = function(plop, config) {
     },
     makeAppendImportsAction({
       data,
-      nameKey,
+      defaultImport: `{{camelCase ${nameKey}}}`,
+      typeImports: [`{{pascalCase ${nameKey}}}State`],
       path: index,
       fileToImport: file
     }),
-    makeAppendSymbolsAction({
+    makeAppendKeyValueAction({
       data,
-      nameKey,
+      key: `{{camelCase ${nameKey}}}`,
+      value: `{{camelCase ${nameKey}}}`,
+      marker: 'SYMBOLS',
+      path: index
+    }),
+    makeAppendKeyValueAction({
+      data,
+      key: `{{camelCase ${nameKey}}}`,
+      value: `{{pascalCase ${nameKey}}}State`,
+      marker: 'SYMBOLS_TYPES',
       path: index
     })
   ];
 
   const makeReducerActions = (baseData, additionalData) => {
-    const data = { ...baseData, ...additionalData };
+    const combinedData = { ...baseData, ...additionalData };
+    const data = {
+      ...combinedData,
+      reducerStateType: getReducerStateType(combinedData.reducerName)
+    };
     return [
       // reducer file
       {

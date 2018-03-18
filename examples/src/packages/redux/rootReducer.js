@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux';
 
 /* 📌 IMPORTS */
+import foo from '../uimodules/foo/reducers/index.js'
 
-export type {{moduleReducerStateType}} = {
-  /* 📌 SYMBOLS_TYPES */
-}
 
 export default combineReducers({
   /* 📌 SYMBOLS */
+  foo,
+
 });

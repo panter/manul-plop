@@ -1,6 +1,8 @@
 const fs = require('fs');
 const nodePath = require('path');
 
+const makeMarkerPattern = marker => new RegExp(`/* 📌 ${marker} */`, 'gi');
+
 module.exports = plop => {
   const relative = (baseFile, file) => {
     const baseDir = nodePath.dirname(baseFile);
@@ -22,28 +24,40 @@ module.exports = plop => {
     return fs.existsSync(fileDestPath);
   };
 
-  const makeAppendImportsAction = ({ nameKey, path, fileToImport, data }) => ({
-    type: 'append',
-    data,
+  const makeAppendImportsAction = ({
+    defaultImport,
+    typeImports,
     path,
-    pattern: /\/\* 📌 IMPORTS \*\//gi,
-    template: `import {{camelCase ${nameKey}}} from '${relative(
+    fileToImport,
+    data
+  }) => {
+    let imports = '';
+    if (defaultImport) {
+      imports += defaultImport;
+    }
+    if (typeImports) {
+      imports += `, { ${typeImports.map(t => `type ${t}`).join(', ')}}`;
+    }
+    return {
+      type: 'append',
+      data,
       path,
-      fileToImport
-    )}'`
-  });
+      pattern: makeMarkerPattern('IMPORTS'),
+      template: `import ${imports} from '${relative(path, fileToImport)}'`
+    };
+  };
 
-  const makeAppendSymbolsAction = ({ nameKey, path, data }) => ({
+  const makeAppendKeyValueAction = ({ key, value, path, data, marker }) => ({
     type: 'append',
     data,
     path,
-    pattern: /\/\* 📌 SYMBOLS \*\//g,
-    template: `  {{camelCase ${nameKey}}},`
+    pattern: makeMarkerPattern(marker),
+    template: `  ${key}: ${value}, `
   });
 
   return {
     makeAppendImportsAction,
-    makeAppendSymbolsAction,
+    makeAppendKeyValueAction,
     insertIf,
     exists,
     relative

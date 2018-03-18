@@ -5,7 +5,7 @@ module.exports = function(plop, config) {
     exists,
     insertIf,
     makeAppendImportsAction,
-    makeAppendSymbolsAction
+    makeAppendKeyValueAction
   } = require('../utils')(plop, config);
 
   const { templatePath, modulePath, reduxRootPath } = require('../paths')(
@@ -24,12 +24,13 @@ module.exports = function(plop, config) {
       templateFile: `${templatePath}/sagas/index.js`
     }),
     makeAppendImportsAction({
-      nameKey,
+      defaultImport: `{{camelCase ${nameKey}}}`,
       path: index,
       fileToImport: file
     }),
-    makeAppendSymbolsAction({
-      nameKey,
+    makeAppendKeyValueAction({
+      key: `{{camelCase ${nameKey}}}`,
+      value: `{{camelCase ${nameKey}}}`,
       path: index
     })
   ];
