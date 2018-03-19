@@ -19,6 +19,7 @@
     "plugin:flowtype/recommended"
   ],
   "rules": {
+     "comma-dangle": [2, "always-multiline"],
     "func-names": 0,
     "semi": [
       "error",

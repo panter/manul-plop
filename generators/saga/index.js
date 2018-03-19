@@ -1,39 +1,37 @@
-const { isEmpty } = require('lodash');
+const { isEmpty } = require('lodash')
 
 module.exports = function(plop, config) {
   const {
     exists,
     insertIf,
     makeAppendImportsAction,
-    makeAppendKeyValueAction
-  } = require('../utils')(plop, config);
+    makeAppendToListAction
+  } = require('../utils')(plop, config)
 
-  const { templatePath, modulePath, reduxRootPath } = require('../paths')(
-    config
-  );
+  const { templatePath } = require('../paths')(config)
 
-  const moduleSagaPath = `${modulePath}/sagas`;
-  const sagaIndexPath = `${moduleSagaPath}/index.js`;
-  const sagaFilePath = `${moduleSagaPath}/{{camelCase sagaName}}.js`;
-  const rootSagaPath = `${reduxRootPath}/rootSaga.js`;
-
-  const makeIndexSagaActions = (data, { nameKey, file, index }) => [
-    ...insertIf(!exists(data, index), {
+  const makeIndexSagaActions = (
+    data,
+    { nameKey, filePathKey, indexPathKey }
+  ) => [
+    {
+      skipIfExists: true,
       type: 'add',
-      path: index,
+      path: `{{getPath "${indexPathKey}"}}`,
       templateFile: `${templatePath}/sagas/index.js`
-    }),
+    },
     makeAppendImportsAction({
       defaultImport: `{{camelCase ${nameKey}}}`,
-      path: index,
-      fileToImport: file
+      pathKey: indexPathKey,
+      fileToImportPathKey: filePathKey
     }),
-    makeAppendKeyValueAction({
+    makeAppendToListAction({
+      marker: 'SYMBOLS',
       key: `{{camelCase ${nameKey}}}`,
       value: `{{camelCase ${nameKey}}}`,
-      path: index
+      path: `{{getPath "${indexPathKey}"}}`
     })
-  ];
+  ]
 
   plop.setGenerator('saga', {
     description: 'create a saga',
@@ -44,8 +42,8 @@ module.exports = function(plop, config) {
         name: 'sagaName',
         message: "What's the saga's name?",
         validate(value) {
-          if (isEmpty(value)) return 'please provide a saga name';
-          return true;
+          if (isEmpty(value)) return 'please provide a saga name'
+          return true
         }
       }
     ],
@@ -54,23 +52,23 @@ module.exports = function(plop, config) {
       // saga file
       {
         type: 'add',
-        path: sagaFilePath,
+        path: '{{getPath "sagaFilePath"}}',
         templateFile: `${templatePath}/sagas/saga.js`,
         abortOnFail: true
       },
       // update module saga index file,
       ...makeIndexSagaActions(data, {
         nameKey: 'sagaName',
-        index: sagaIndexPath,
-        file: sagaFilePath
+        indexPathKey: 'sagaIndexPath',
+        filePathKey: 'sagaFilePath'
       }),
 
       // upsert rootSaga
       ...makeIndexSagaActions(data, {
         nameKey: 'moduleName',
-        index: rootSagaPath,
-        file: sagaIndexPath
+        indexPathKey: 'rootSagaPath',
+        filePathKey: 'sagaIndexPath'
       })
     ]
-  });
-};
+  })
+}

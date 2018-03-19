@@ -1,93 +1,87 @@
-const { isEmpty, upperFirst, camelCase } = require('lodash');
+const { isEmpty, upperFirst, camelCase } = require('lodash')
 
-const pascalCase = s => upperFirst(camelCase(s));
-const getReducerStateType = reducerName => `${pascalCase(reducerName)}State`;
+const pascalCase = s => upperFirst(camelCase(s))
+const getReducerStateType = reducerName => `${pascalCase(reducerName)}State`
 module.exports = function(plop, config) {
   const {
     makeAppendImportsAction,
-    makeAppendKeyValueAction
-  } = require('../utils')(plop, config);
+    makeAppendKeyValueAction,
+    makeAppendToListAction
+  } = require('../utils')(plop, config)
 
-  const { templatePath, modulePath, reduxRootPath } = require('../paths')(
-    config
-  );
-  const moduleReducerPath = `${modulePath}/reducers`;
-  const reducerIndexPath = `${moduleReducerPath}/index.js`;
-  const reducerFilePath = `${moduleReducerPath}/{{camelCase reducerName}}.js`;
-  const rootReducerPath = `${reduxRootPath}/rootReducer.js`;
+  const { templatePath } = require('../paths')(config)
 
   const makeIndexReducerActions = ({
     data: dataRaw,
     nameKey,
     exportNameKey,
-    file,
-    index
+    filePathKey,
+    indexPathKey
   }) => {
     const data = {
       ...dataRaw,
       exportReducerStateType: getReducerStateType(dataRaw[exportNameKey])
-    };
+    }
 
-    const reducerNameTemplate = `{{camelCase ${nameKey}}}`;
-    const stateTypeTemplateName = `{{pascalCase ${nameKey}}}State`;
+    const reducerNameTemplate = `{{camelCase ${nameKey}}}`
+    const stateTypeTemplateName = `{{pascalCase ${nameKey}}}State`
     return [
       {
         data,
         skipIfExists: true,
         type: 'add',
-        path: index,
+        path: `{{getPath "${indexPathKey}"}}`,
         templateFile: `${templatePath}/reducers/index.js`
       },
       makeAppendImportsAction({
         data,
         defaultImport: reducerNameTemplate,
         typeImports: [stateTypeTemplateName],
-        path: index,
-        fileToImport: file
+        pathKey: indexPathKey,
+        fileToImportPathKey: filePathKey
       }),
-      makeAppendKeyValueAction({
+      makeAppendToListAction({
         data,
-        key: reducerNameTemplate,
         value: reducerNameTemplate,
         marker: 'SYMBOLS',
-        path: index
+        path: `{{getPath "${indexPathKey}"}}`
       }),
       makeAppendKeyValueAction({
         data,
         key: reducerNameTemplate,
         value: stateTypeTemplateName,
         marker: 'SYMBOLS_TYPES',
-        path: index
+        path: `{{getPath "${indexPathKey}"}}`
       })
-    ];
-  };
+    ]
+  }
 
   const makeReducerActions = (baseData, additionalData) => {
-    const combinedData = { ...baseData, ...additionalData };
+    const combinedData = { ...baseData, ...additionalData }
     const data = {
       ...combinedData,
       reducerStateType: getReducerStateType(combinedData.reducerName)
-    };
+    }
     return [
       // reducer file
       {
         data,
         skipIfExists: true,
         type: 'add',
-        path: reducerFilePath,
+        path: '{{getPath "reducerFilePath"}}',
         templateFile: `${templatePath}/reducers/reducer.js`
       },
       {
         data,
         type: 'append',
-        path: reducerFilePath,
+        path: '{{getPath "reducerFilePath"}}',
         pattern: /\/\* 📌 ACTION-CREATORS \*\//gi,
         templateFile: `${templatePath}/reducers/actionCreator.js`
       },
       {
         data,
         type: 'append',
-        path: reducerFilePath,
+        path: '{{getPath "reducerFilePath"}}',
         pattern: /\/\* 📌 ACTION-REDUCERS \*\//gi,
         templateFile: `${templatePath}/reducers/actionReducer.js`
       },
@@ -97,8 +91,8 @@ module.exports = function(plop, config) {
         data,
         nameKey: 'reducerName',
         exportNameKey: 'moduleName',
-        index: reducerIndexPath,
-        file: reducerFilePath
+        indexPathKey: 'reducerIndexPath',
+        filePathKey: 'reducerFilePath'
       }),
 
       // upsert rootReducer
@@ -106,49 +100,49 @@ module.exports = function(plop, config) {
         data,
         nameKey: 'moduleName',
         exportNameKey: null,
-        index: rootReducerPath,
-        file: reducerIndexPath
+        indexPathKey: 'rootReducerPath',
+        filePathKey: 'reducerIndexPath'
       })
-    ];
-  };
+    ]
+  }
 
   const reducerNamePrompt = {
     type: 'input',
     name: 'reducerName',
     message: "What's the reducer's name?",
     validate(value) {
-      if (isEmpty(value)) return 'please provide a reducer name';
-      return true;
+      if (isEmpty(value)) return 'please provide a reducer name'
+      return true
     }
-  };
+  }
   const uiElementNamePrompt = {
     type: 'input',
     name: 'uiElementName',
     message: "What's the ui-element's name?",
     validate(value) {
-      if (isEmpty(value)) return 'please provide an ui-element name';
-      return true;
+      if (isEmpty(value)) return 'please provide an ui-element name'
+      return true
     }
-  };
+  }
 
   const propertyNamePrompt = {
     type: 'input',
     name: 'propertyName',
     message: "What's the property's name?",
     validate(value) {
-      if (isEmpty(value)) return 'please provide a property name';
-      return true;
+      if (isEmpty(value)) return 'please provide a property name'
+      return true
     }
-  };
+  }
   const initialValuePrompt = {
     type: 'input',
     name: 'initialValue',
     message: "What's the property's initial value?",
     validate(value) {
-      if (isEmpty(value)) return 'please provide a property value';
-      return true;
+      if (isEmpty(value)) return 'please provide a property value'
+      return true
     }
-  };
+  }
 
   plop.setGenerator('reducer-ui', {
     mixins: ['with-module'],
@@ -176,19 +170,19 @@ module.exports = function(plop, config) {
         key: `${data.uiElementName}Visible`,
         value: 'false',
         marker: 'INITIAL-STATE',
-        path: reducerFilePath
+        path: '{{getPath "reducerFilePath"}}'
       })
       /* {
         type: 'append',
         data: {
           reducerName: 'ui'
         },
-        path: reducerFilePath,
+        path: "{{getPath "reducerFilePath"}}",
         pattern: /\/\* 📌 INITIAL-STATE \*\//gi,
         template: `${data.uiElementName}Visible: false`
       } */
     ]
-  });
+  })
   plop.setGenerator('reducer-setter', {
     mixins: ['with-module'],
     description: 'create a setter reducer-action',
@@ -204,16 +198,16 @@ module.exports = function(plop, config) {
         key: '{{propertyName}}',
         value: '{{{initialValue}}}',
         marker: 'INITIAL-STATE',
-        path: reducerFilePath
+        path: '{{getPath "reducerFilePath"}}'
       })
       /* {
         type: 'append',
-        path: reducerFilePath,
+        path: "{{getPath "reducerFilePath"}}",
         pattern: /\/\* 📌 INITIAL-STATE \*\//gi,
         template: '{{propertyName}}: {{{initialValue}}}, '
       } */
     ]
-  });
+  })
 
   plop.setGenerator('reducer-custom', {
     mixins: ['with-module'],
@@ -225,11 +219,11 @@ module.exports = function(plop, config) {
         name: 'actionName',
         message: "What's the actions's name?",
         validate(value) {
-          if (isEmpty(value)) return 'please provide a action name';
-          return true;
+          if (isEmpty(value)) return 'please provide a action name'
+          return true
         }
       }
     ],
     actions: makeReducerActions
-  });
-};
+  })
+}
