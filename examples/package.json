@@ -1,7 +1,7 @@
 {
   "name": "plop-example",
   "devDependencies": {
-    "@panter/plop": "^1.9.1",
+    "@panter/plop": "^2.0.1",
     "flow-bin": "0.61"
   }
 }

@@ -1,28 +1,31 @@
 module.exports = function(plop, config) {
-  const { insertIf } = require('../utils')(plop);
-  const { templatePath } = require('../paths')(config);
+  const { insertIf } = require('../utils')(plop)
+  const { templatePath } = require('../paths')(config)
   plop.setActionType('container', (answers, actionConfig, { runActions }) =>
     runActions(
       [
         {
           type: 'add',
+          skipIfExists: true,
           path: `${actionConfig.path}/{{name}}.js`,
-          templateFile: actionConfig.containerTemplate
+          templateFile: actionConfig.containerTemplate,
         },
         ...insertIf(actionConfig.storyTemplate, {
           type: 'add',
-          path: `${actionConfig.path}/stories/{{name}}.story.js`,
-          templateFile: actionConfig.storyTemplate
+          skipIfExists: true,
+          path: `${actionConfig.path}/stories/{{name}}.stories.js`,
+          templateFile: actionConfig.storyTemplate,
         }),
         ...insertIf(actionConfig.testTemplate, {
           type: 'add',
+          skipIfExists: true,
           path: `${actionConfig.path}/tests/{{name}}.test.js`,
-          templateFile: actionConfig.testTemplate
-        })
+          templateFile: actionConfig.testTemplate,
+        }),
       ],
       answers
     )
-  );
+  )
 
   plop.setGenerator('container', {
     mixins: ['with-module'],
@@ -30,24 +33,32 @@ module.exports = function(plop, config) {
       {
         type: 'input',
         name: 'name',
-        message: "What's the containers name?"
-      }
+        message: "What's the containers name?",
+      },
     ],
     actions: [
       {
         type: 'component',
         pathInModule: 'components',
-        containerTemplate: `${templatePath}/components/component.js`,
-        testTemplate: `${templatePath}/components/component.test.js`,
-        storyTemplate: `${templatePath}/components/component.story.js`
+        componentTemplate: `${templatePath}/components/component.js`,
+        testTemplate: config.componentTests
+          ? `${templatePath}/components/component.test.js`
+          : null,
+        storyTemplate: config.componentStorybook
+          ? `${templatePath}/components/component.stories.js`
+          : null,
       },
       {
         type: 'container',
         pathInModule: 'containers',
         containerTemplate: `${templatePath}/containers/container.js`,
-        testTemplate: `${templatePath}/containers/container.test.js`,
-        storyTemplate: `${templatePath}/containers/container.story.js`
-      }
-    ]
-  });
-};
+        testTemplate: config.containerTests
+          ? `${templatePath}/containers/container.test.js`
+          : null,
+        storyTemplate: config.containerStorybook
+          ? `${templatePath}/containers/container.stories.js`
+          : null,
+      },
+    ],
+  })
+}
