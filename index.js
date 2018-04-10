@@ -7,6 +7,8 @@ const defaultConfig = {
   componentTests: true,
   containerStorybook: true,
   containerTests: true,
+  extension: 'js',
+  jsxExtension: 'js',
 }
 
 module.exports = function(plop, customConfig = {}) {
