@@ -41,26 +41,6 @@ module.exports = function(plop, config) {
         type: 'component',
         pathInModule: 'components',
         componentTemplate: `${templatePath}/components/component.js`,
-        testTemplate: `${templatePath}/components/component.test.js`,
-        storyTemplate: `${templatePath}/components/component.stories.js`,
-      },
-    ],
-  })
-
-  plop.setGenerator('component-primitives', {
-    mixins: ['with-module'],
-    prompts: [
-      {
-        type: 'input',
-        name: 'name',
-        message: "What's the component name?",
-      },
-    ],
-    actions: [
-      {
-        type: 'component',
-        pathInModule: 'components',
-        componentTemplate: `${templatePath}/components/component.js`,
         testTemplate: config.componentTests
           ? `${templatePath}/components/component.test.js`
           : null,
