@@ -1,5 +1,5 @@
 module.exports = config => {
-  const basePath = config.basePath
+  const { basePath } = config
   const templatePath = `${config.plopFilePath}/${config.templatePath}`
   const modulesPath = `${basePath}/${config.modulesPath}`
   const reduxRootPath = `${basePath}/${config.reduxRootPath}`
@@ -26,6 +26,6 @@ module.exports = config => {
     moduleSagaPath,
     sagaIndexPath,
     sagaFilePath,
-    rootSagaPath
+    rootSagaPath,
   }
 }

@@ -1,4 +1,4 @@
-const { isEmpty, forEach, uniq, filter } = require('lodash')
+const { isEmpty, uniq, filter } = require('lodash')
 const { exec } = require('child_process')
 
 module.exports = (plop, config) => {
@@ -12,7 +12,7 @@ module.exports = (plop, config) => {
     validate(value) {
       if (isEmpty(value)) return 'please provide a module name'
       return true
-    }
+    },
   }
 
   const createModuleIfNotExistsPrompt = {
@@ -21,21 +21,14 @@ module.exports = (plop, config) => {
     when(data) {
       return !exists(data, modulePath)
     },
-    message: 'This module does not exist. Should I create this module?'
-  }
-
-  const appendPaths = data => {
-    const paths = require('../paths')(config)
-    forEach(paths, (value, key) => {
-      data[key] = value
-    })
+    message: 'This module does not exist. Should I create this module?',
   }
 
   plop.setGeneratorMixin('with-module', {
     prompts: prompts => [
       moduleNamePrompt,
       ...prompts,
-      createModuleIfNotExistsPrompt
+      createModuleIfNotExistsPrompt,
     ],
     actions: (actions = [], data) => {
       if (data.createModule === false) {
@@ -45,14 +38,14 @@ module.exports = (plop, config) => {
         actionConfig.path || `${modulePath}/${actionConfig.pathInModule}`
       const result = actions.map(actionConfig => ({
         ...actionConfig,
-        path: getPath(actionConfig)
+        path: getPath(actionConfig),
       }))
       const pathsToOpen = filter(
         uniq(
           actions.map(actionConfig =>
             plop.renderString(getPath(actionConfig), {
               ...data,
-              ...actionConfig.data
+              ...actionConfig.data,
             })
           )
         )
@@ -60,12 +53,11 @@ module.exports = (plop, config) => {
 
       pathsToOpen.forEach(path => {
         const cmd = `open ${path}`
-        console.log(`cmd: ${cmd}`)
 
         exec(cmd)
       })
 
       return result
-    }
+    },
   })
 }

@@ -2,10 +2,8 @@ const { isEmpty } = require('lodash')
 
 module.exports = function(plop, config) {
   const {
-    exists,
-    insertIf,
     makeAppendImportsAction,
-    makeAppendToListAction
+    makeAppendToListAction,
   } = require('../utils')(plop, config)
 
   const { templatePath } = require('../paths')(config)
@@ -18,19 +16,19 @@ module.exports = function(plop, config) {
       skipIfExists: true,
       type: 'add',
       path: `{{getPath "${indexPathKey}"}}`,
-      templateFile: `${templatePath}/sagas/index.js`
+      templateFile: `${templatePath}/sagas/index.js`,
     },
     makeAppendImportsAction({
       defaultImport: `{{camelCase ${nameKey}}}`,
       pathKey: indexPathKey,
-      fileToImportPathKey: filePathKey
+      fileToImportPathKey: filePathKey,
     }),
     makeAppendToListAction({
       marker: 'SYMBOLS',
       key: `{{camelCase ${nameKey}}}`,
       value: `{{camelCase ${nameKey}}}`,
-      path: `{{getPath "${indexPathKey}"}}`
-    })
+      path: `{{getPath "${indexPathKey}"}}`,
+    }),
   ]
 
   plop.setGenerator('saga', {
@@ -44,8 +42,8 @@ module.exports = function(plop, config) {
         validate(value) {
           if (isEmpty(value)) return 'please provide a saga name'
           return true
-        }
-      }
+        },
+      },
     ],
 
     actions: data => [
@@ -54,21 +52,21 @@ module.exports = function(plop, config) {
         type: 'add',
         path: '{{getPath "sagaFilePath"}}',
         templateFile: `${templatePath}/sagas/saga.js`,
-        abortOnFail: true
+        abortOnFail: true,
       },
       // update module saga index file,
       ...makeIndexSagaActions(data, {
         nameKey: 'sagaName',
         indexPathKey: 'sagaIndexPath',
-        filePathKey: 'sagaFilePath'
+        filePathKey: 'sagaFilePath',
       }),
 
       // upsert rootSaga
       ...makeIndexSagaActions(data, {
         nameKey: 'moduleName',
         indexPathKey: 'rootSagaPath',
-        filePathKey: 'sagaIndexPath'
-      })
-    ]
+        filePathKey: 'sagaIndexPath',
+      }),
+    ],
   })
 }

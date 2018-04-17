@@ -1,25 +1,26 @@
 module.exports = function(plop, config) {
   const { insertIf } = require('../utils')(plop)
   const { templatePath } = require('../paths')(config)
+  const {extension} = config
   plop.setActionType('container', (answers, actionConfig, { runActions }) =>
     runActions(
       [
         {
           type: 'add',
           skipIfExists: true,
-          path: `${actionConfig.path}/{{name}}.js`,
+          path: `${actionConfig.path}/{{name}}.${extension}`,
           templateFile: actionConfig.containerTemplate,
         },
         ...insertIf(actionConfig.storyTemplate, {
           type: 'add',
           skipIfExists: true,
-          path: `${actionConfig.path}/stories/{{name}}.stories.js`,
+          path: `${actionConfig.path}/stories/{{name}}.stories.${extension}`,
           templateFile: actionConfig.storyTemplate,
         }),
         ...insertIf(actionConfig.testTemplate, {
           type: 'add',
           skipIfExists: true,
-          path: `${actionConfig.path}/tests/{{name}}.test.js`,
+          path: `${actionConfig.path}/tests/{{name}}.${extension}`,
           templateFile: actionConfig.testTemplate,
         }),
       ],

@@ -6,7 +6,7 @@ module.exports = function(plop, config) {
   const {
     makeAppendImportsAction,
     makeAppendKeyValueAction,
-    makeAppendToListAction
+    makeAppendToListAction,
   } = require('../utils')(plop, config)
 
   const { templatePath } = require('../paths')(config)
@@ -16,11 +16,11 @@ module.exports = function(plop, config) {
     nameKey,
     exportNameKey,
     filePathKey,
-    indexPathKey
+    indexPathKey,
   }) => {
     const data = {
       ...dataRaw,
-      exportReducerStateType: getReducerStateType(dataRaw[exportNameKey])
+      exportReducerStateType: getReducerStateType(dataRaw[exportNameKey]),
     }
 
     const reducerNameTemplate = `{{camelCase ${nameKey}}}`
@@ -31,28 +31,28 @@ module.exports = function(plop, config) {
         skipIfExists: true,
         type: 'add',
         path: `{{getPath "${indexPathKey}"}}`,
-        templateFile: `${templatePath}/reducers/index.js`
+        templateFile: `${templatePath}/reducers/index.js`,
       },
       makeAppendImportsAction({
         data,
         defaultImport: reducerNameTemplate,
         typeImports: [stateTypeTemplateName],
         pathKey: indexPathKey,
-        fileToImportPathKey: filePathKey
+        fileToImportPathKey: filePathKey,
       }),
       makeAppendToListAction({
         data,
         value: reducerNameTemplate,
         marker: 'SYMBOLS',
-        path: `{{getPath "${indexPathKey}"}}`
+        path: `{{getPath "${indexPathKey}"}}`,
       }),
       makeAppendKeyValueAction({
         data,
         key: reducerNameTemplate,
         value: stateTypeTemplateName,
         marker: 'SYMBOLS_TYPES',
-        path: `{{getPath "${indexPathKey}"}}`
-      })
+        path: `{{getPath "${indexPathKey}"}}`,
+      }),
     ]
   }
 
@@ -60,7 +60,7 @@ module.exports = function(plop, config) {
     const combinedData = { ...baseData, ...additionalData }
     const data = {
       ...combinedData,
-      reducerStateType: getReducerStateType(combinedData.reducerName)
+      reducerStateType: getReducerStateType(combinedData.reducerName),
     }
     return [
       // reducer file
@@ -69,21 +69,21 @@ module.exports = function(plop, config) {
         skipIfExists: true,
         type: 'add',
         path: '{{getPath "reducerFilePath"}}',
-        templateFile: `${templatePath}/reducers/reducer.js`
+        templateFile: `${templatePath}/reducers/reducer.js`,
       },
       {
         data,
         type: 'append',
         path: '{{getPath "reducerFilePath"}}',
         pattern: /\/\* 📌 ACTION-CREATORS \*\//gi,
-        templateFile: `${templatePath}/reducers/actionCreator.js`
+        templateFile: `${templatePath}/reducers/actionCreator.js`,
       },
       {
         data,
         type: 'append',
         path: '{{getPath "reducerFilePath"}}',
         pattern: /\/\* 📌 ACTION-REDUCERS \*\//gi,
-        templateFile: `${templatePath}/reducers/actionReducer.js`
+        templateFile: `${templatePath}/reducers/actionReducer.js`,
       },
 
       // update module reducer index file,
@@ -92,7 +92,7 @@ module.exports = function(plop, config) {
         nameKey: 'reducerName',
         exportNameKey: 'moduleName',
         indexPathKey: 'reducerIndexPath',
-        filePathKey: 'reducerFilePath'
+        filePathKey: 'reducerFilePath',
       }),
 
       // upsert rootReducer
@@ -101,8 +101,8 @@ module.exports = function(plop, config) {
         nameKey: 'moduleName',
         exportNameKey: null,
         indexPathKey: 'rootReducerPath',
-        filePathKey: 'reducerIndexPath'
-      })
+        filePathKey: 'reducerIndexPath',
+      }),
     ]
   }
 
@@ -113,7 +113,7 @@ module.exports = function(plop, config) {
     validate(value) {
       if (isEmpty(value)) return 'please provide a reducer name'
       return true
-    }
+    },
   }
   const uiElementNamePrompt = {
     type: 'input',
@@ -122,7 +122,7 @@ module.exports = function(plop, config) {
     validate(value) {
       if (isEmpty(value)) return 'please provide an ui-element name'
       return true
-    }
+    },
   }
 
   const propertyNamePrompt = {
@@ -132,7 +132,7 @@ module.exports = function(plop, config) {
     validate(value) {
       if (isEmpty(value)) return 'please provide a property name'
       return true
-    }
+    },
   }
   const initialValuePrompt = {
     type: 'input',
@@ -141,7 +141,7 @@ module.exports = function(plop, config) {
     validate(value) {
       if (isEmpty(value)) return 'please provide a property value'
       return true
-    }
+    },
   }
 
   plop.setGenerator('reducer-ui', {
@@ -154,24 +154,24 @@ module.exports = function(plop, config) {
         propertyName: `${data.uiElementName}Visible`,
         actionName: `hide${upperFirst(data.uiElementName)}`,
         propertyValue: 'Boolean(false)', // false is buggy (!) see https://github.com/amwmedia/plop/issues/112
-        payloadCreator: null
+        payloadCreator: null,
       }),
       ...makeReducerActions(data, {
         reducerName: 'ui',
         actionName: `show${upperFirst(data.uiElementName)}`,
         propertyName: `${data.uiElementName}Visible`,
         propertyValue: 'true',
-        payloadCreator: null
+        payloadCreator: null,
       }),
       makeAppendKeyValueAction({
         data: {
-          reducerName: 'ui'
+          reducerName: 'ui',
         },
         key: `${data.uiElementName}Visible`,
         value: 'false',
         marker: 'INITIAL-STATE',
-        path: '{{getPath "reducerFilePath"}}'
-      })
+        path: '{{getPath "reducerFilePath"}}',
+      }),
       /* {
         type: 'append',
         data: {
@@ -181,7 +181,7 @@ module.exports = function(plop, config) {
         pattern: /\/\* 📌 INITIAL-STATE \*\//gi,
         template: `${data.uiElementName}Visible: false`
       } */
-    ]
+    ],
   })
   plop.setGenerator('reducer-setter', {
     mixins: ['with-module'],
@@ -191,22 +191,22 @@ module.exports = function(plop, config) {
       ...makeReducerActions(data, {
         actionName: `set${upperFirst(data.propertyName)}`,
         propertyValue: 'action.payload',
-        payloadCreator: `(f) => f`
+        payloadCreator: `(f) => f`,
       }),
       makeAppendKeyValueAction({
         data,
         key: '{{propertyName}}',
         value: '{{{initialValue}}}',
         marker: 'INITIAL-STATE',
-        path: '{{getPath "reducerFilePath"}}'
-      })
+        path: '{{getPath "reducerFilePath"}}',
+      }),
       /* {
         type: 'append',
         path: "{{getPath "reducerFilePath"}}",
         pattern: /\/\* 📌 INITIAL-STATE \*\//gi,
         template: '{{propertyName}}: {{{initialValue}}}, '
       } */
-    ]
+    ],
   })
 
   plop.setGenerator('reducer-custom', {
@@ -221,9 +221,9 @@ module.exports = function(plop, config) {
         validate(value) {
           if (isEmpty(value)) return 'please provide a action name'
           return true
-        }
-      }
+        },
+      },
     ],
-    actions: makeReducerActions
+    actions: makeReducerActions,
   })
 }
