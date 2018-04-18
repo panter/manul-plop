@@ -1,6 +1,6 @@
 module.exports = function(plop, config) {
   const { insertIf } = require('../utils')(plop)
-  const {extension, jsxExtension} = config
+  const { jsxExtension } = config
   const { templatePath } = require('../paths')(config)
   plop.setActionType('component', (answers, actionConfig, { runActions }) =>
     runActions(
@@ -20,7 +20,7 @@ module.exports = function(plop, config) {
         ...insertIf(actionConfig.testTemplate, {
           type: 'add',
           skipIfExists: true,
-          path: `${actionConfig.path}/tests/{{name}}.test.${extension}`,
+          path: `${actionConfig.path}/tests/{{name}}.test.${jsxExtension}`,
           templateFile: actionConfig.testTemplate,
         }),
       ],
