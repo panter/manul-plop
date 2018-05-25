@@ -3,7 +3,7 @@ module.exports = config => {
   const templatePath = `${config.plopFilePath}/${config.templatePath}`
   const modulesPath = `${basePath}/${config.modulesPath}`
   const reduxRootPath = `${basePath}/${config.reduxRootPath}`
-  const modulePath = `${modulesPath}/{{camelCase moduleName}}`
+  const modulePath = `${modulesPath}/{{moduleName}}`
   const moduleReducerPath = `${modulePath}/reducers`
   const reducerIndexPath = `${moduleReducerPath}/index.js`
   const reducerFilePath = `${moduleReducerPath}/{{camelCase reducerName}}.js`
