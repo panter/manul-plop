@@ -41,12 +41,12 @@ module.exports = function(plop, config) {
       {
         type: 'component',
         pathInModule: 'components',
-        componentTemplate: `${templatePath}/components/component.js`,
+        componentTemplate: `${templatePath}/components/component.${jsxExtension}`,
         testTemplate: config.componentTests
-          ? `${templatePath}/components/component.test.js`
+          ? `${templatePath}/components/component.test.${jsxExtension}`
           : null,
         storyTemplate: config.componentStorybook
-          ? `${templatePath}/components/component.stories.js`
+          ? `${templatePath}/components/component.stories.${jsxExtension}`
           : null,
       },
     ],

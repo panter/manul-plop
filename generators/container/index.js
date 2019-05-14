@@ -1,28 +1,28 @@
 module.exports = function(plop, config) {
   const { insertIf } = require('../utils')(plop)
   const { templatePath } = require('../paths')(config)
-  const {extension} = config
+  const { jsxExtension } = config
   plop.setActionType('container', (answers, actionConfig, { runActions }) =>
     runActions(
       [
         {
           type: 'add',
           skipIfExists: true,
-          path: `${actionConfig.path}/{{name}}.${extension}`,
-          templateFile: actionConfig.containerTemplate,
+          path: `${actionConfig.path}/{{name}}.${jsxExtension}`,
+          templateFile: actionConfig.containerTemplate
         },
         ...insertIf(actionConfig.storyTemplate, {
           type: 'add',
           skipIfExists: true,
-          path: `${actionConfig.path}/stories/{{name}}.stories.${extension}`,
-          templateFile: actionConfig.storyTemplate,
+          path: `${actionConfig.path}/stories/{{name}}.stories.${jsxExtension}`,
+          templateFile: actionConfig.storyTemplate
         }),
         ...insertIf(actionConfig.testTemplate, {
           type: 'add',
           skipIfExists: true,
-          path: `${actionConfig.path}/tests/{{name}}.${extension}`,
-          templateFile: actionConfig.testTemplate,
-        }),
+          path: `${actionConfig.path}/tests/{{name}}.${jsxExtension}`,
+          templateFile: actionConfig.testTemplate
+        })
       ],
       answers
     )
@@ -34,8 +34,8 @@ module.exports = function(plop, config) {
       {
         type: 'input',
         name: 'name',
-        message: "What's the containers name?",
-      },
+        message: "What's the containers name?"
+      }
     ],
     actions: [
       {
@@ -47,7 +47,7 @@ module.exports = function(plop, config) {
           : null,
         storyTemplate: config.componentStorybook
           ? `${templatePath}/components/component.stories.js`
-          : null,
+          : null
       },
       {
         type: 'container',
@@ -58,8 +58,8 @@ module.exports = function(plop, config) {
           : null,
         storyTemplate: config.containerStorybook
           ? `${templatePath}/containers/container.stories.js`
-          : null,
-      },
-    ],
+          : null
+      }
+    ]
   })
 }
