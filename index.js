@@ -3,6 +3,7 @@ const defaultConfig = {
   modulesPath: 'ui',
   reduxRootPath: 'redux',
   templatePath: 'plopTemplates',
+  componentSubmodule: false,
   componentStorybook: true,
   componentTests: true,
   containerStorybook: true,
