@@ -2,25 +2,28 @@ module.exports = function(plop, config) {
   const { insertIf } = require('../utils')(plop)
   const { jsxExtension } = config
   const { templatePath } = require('../paths')(config)
+
+  const subPath = config.componentSubmodule ? "{{submodule}}/{{name}}" : "{{name}}"
+
   plop.setActionType('component', (answers, actionConfig, { runActions }) =>
     runActions(
       [
         {
           type: 'add',
           skipIfExists: true,
-          path: `${actionConfig.path}/{{name}}.${jsxExtension}`,
+          path: `${actionConfig.path}/${subPath}.${jsxExtension}`,
           templateFile: actionConfig.componentTemplate,
         },
         ...insertIf(actionConfig.storyTemplate, {
           type: 'add',
           skipIfExists: true,
-          path: `${actionConfig.path}/stories/{{name}}.stories.${jsxExtension}`,
+          path: `${actionConfig.path}/stories/${subPath}.stories.${jsxExtension}`,
           templateFile: actionConfig.storyTemplate,
         }),
         ...insertIf(actionConfig.testTemplate, {
           type: 'add',
           skipIfExists: true,
-          path: `${actionConfig.path}/tests/{{name}}.test.${jsxExtension}`,
+          path: `${actionConfig.path}/tests/${subPath}.test.${jsxExtension}`,
           templateFile: actionConfig.testTemplate,
         }),
       ],
@@ -31,6 +34,14 @@ module.exports = function(plop, config) {
   plop.setGenerator('component', {
     mixins: ['with-module'],
     prompts: [
+      ...config.componentSubmodule ? 
+      [
+        {
+          type: 'input',
+          name: 'submodule',
+          message: "What's the submodule name?",
+        },
+      ] : [],
       {
         type: 'input',
         name: 'name',
